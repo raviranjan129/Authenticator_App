@@ -1,4 +1,4 @@
-
+import bcrypt from 'bcrypt'
 import mongoose from 'mongoose';
 
 const userSchema=new mongoose.Schema(
@@ -30,6 +30,19 @@ const userSchema=new mongoose.Schema(
     },{timestamps:true}
 )
 
+
+userSchema.pre("save", function modifiedPassword(next){
+
+    const user=this;
+
+    const SALT=bcrypt.genSaltSync(9)
+
+    const hashedPassword = bcrypt.hashSync(user.password,SALT);
+
+    user.password=hashedPassword;
+
+    next()
+})
 
 const user=mongoose.model("User",userSchema); //mongoose.model is used to create a collection of a particular database;
 
